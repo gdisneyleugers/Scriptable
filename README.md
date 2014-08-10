@@ -13,5 +13,7 @@ python Text.py
 Requires:
 ==========
 pip install pygtk gtksourceview2 
+
+===
 gem install gist
 
