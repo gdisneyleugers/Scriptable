@@ -3,6 +3,8 @@ import gtk
 import os
 import pango
 import gtksourceview2
+import vte
+import gobject
 
 class MyGUI:
 
@@ -46,23 +48,26 @@ class MyGUI:
     self.count_label.set_alignment(0, 0)
     # we set text here because we want the signal to be triggered
     # and need the count_label for display of result
-    clear = textbuffer.set_text("#########################Scriptable##########################\n")
+    clear = textbuffer.set_text("#########################Scriptable##########################")
 
     # button
     a = self.notebook.current_page()
+    e = gtk.Button(label="Terminal Mode")
     b = gtk.Button("Run Script")
     c = gtk.Button("Save Script")
-    if a == -1:
-        d = gtk.Button("Close tab")
-        self.mainbox.pack_start(b, expand=False)
-        self.mainbox.pack_start(c, expand=False)
-        self.mainbox.pack_start(d, expand=False)
-        b.connect( "clicked", self.check_text)
-        c.connect( "clicked", self.clear)
-        d.connect( "clicked", self.rm)
-        c.show()
-        b.show()
-        d.show()
+    d = gtk.Button("Close tab")
+    self.mainbox.pack_start(e, expand=False)
+    self.mainbox.pack_start(b, expand=False)
+    self.mainbox.pack_start(c, expand=False)
+    self.mainbox.pack_start(d, expand=False)
+    b.connect( "clicked", self.check_text)
+    c.connect( "clicked", self.clear)
+    d.connect( "clicked", self.rm)
+    e.connect( "clicked", self.terminal)
+    e.show()
+    c.show()
+    b.show()
+    d.show()
     if a == 0:
         d = gtk.Button("Close tab")
         self.mainbox.pack_start(b, expand=False)
@@ -80,13 +85,27 @@ class MyGUI:
 
   def destroy( self, w):
     gtk.main_quit()
+  def terminal(self, w):
+      import vte
+      self.terminal = vte.Terminal()
+      self.terminal.connect ("child-exited", lambda term: gtk.main_quit())
+      self.terminal.fork_command()      
+      sw = gtk.ScrolledWindow()
+      sw.add(self.terminal)
+      sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+      self.notebook.add(sw)
+      sw.show_all()
   def rm(self, w):
     a = self.notebook.current_page()
     self.notebook.remove_page(a)
     if a == 0:
-        self.window.destroy()
-        m = MyGUI("Scriptable")
-        m.main()
+	md = gtk.MessageDialog(None,
+    	gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING,
+    	gtk.BUTTONS_CLOSE, "Warning about to close Scriptable")
+    	md.run()
+	if gtk.BUTTONS_CLOSE:
+        	gtk.MessageDialog.destroy(md)
+		quit()
   def clear( self, w ):
     textbuffer = self.textview.get_buffer()
     startiter, enditer = textbuffer.get_bounds()
