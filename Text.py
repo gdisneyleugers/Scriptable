@@ -46,7 +46,7 @@ class MyGUI:
     self.count_label.set_alignment(0, 0)
     # we set text here because we want the signal to be triggered
     # and need the count_label for display of result
-    clear = textbuffer.set_text("#########################Scriptable##########################")
+    clear = textbuffer.set_text("#########################Scriptable##########################\n")
 
     # button
     a = self.notebook.current_page()
