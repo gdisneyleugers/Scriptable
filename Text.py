@@ -2,6 +2,8 @@ __author__ = 'gregorydisney'
 import gtk
 import os
 import pango
+import gtksourceview2
+
 class MyGUI:
 
   def __init__( self, title):
@@ -28,13 +30,13 @@ class MyGUI:
     sw.add(self.textview)
     self.notebook.add(sw)
     sw.show()
-    self.mainbox.pack_start(sw)
     self.mainbox.pack_start(self.notebook)
     self.notebook.show()
     textbuffer = self.textview.get_buffer()
+    gtksourceview2.Buffer()
+    gtksourceview2.View(textbuffer)
     self.textview.set_cursor_visible(True)
     self.textview.drag_highlight()
-    #self.mainbox.pack_start(self.textview)
     self.textview.show()
     textbuffer.connect( "changed", self.text_changed) #@+
     # label for counts
@@ -51,7 +53,7 @@ class MyGUI:
     b = gtk.Button("Run Script")
     c = gtk.Button("Save Script")
     if a == -1:
-        d = gtk.Button("Reset Scriptable")
+        d = gtk.Button("Close tab")
         self.mainbox.pack_start(b, expand=False)
         self.mainbox.pack_start(c, expand=False)
         self.mainbox.pack_start(d, expand=False)
@@ -134,7 +136,7 @@ class MyGUI:
 
 if __name__ == "__main__":
   try:
-    m = MyGUI( "Scriptable")
+    m = MyGUI("Scriptable")
     m.main()
   except Exception:
       print ""
