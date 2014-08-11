@@ -12,11 +12,12 @@ class MyGUI:
     self.window = gtk.Window()
     self.title = title
     self.window.set_title( title)
-    self.window.set_size_request(405, 450)
+    self.window.set_size_request(600, 450)
     self.window.set_resize_mode(True)
     a = self.window.set_icon_from_file("icon.png")
     self.window.connect( "destroy", self.destroy)
     self.create_interior()
+    self.buttons()
     self.window.show_all()
 
   def create_interior( self):
@@ -49,40 +50,53 @@ class MyGUI:
     # we set text here because we want the signal to be triggered
     # and need the count_label for display of result
     clear = textbuffer.set_text("#########################Scriptable##########################")
-
+  def buttons(self):
     # button
     a = self.notebook.current_page()
-    e = gtk.Button(label="Terminal Mode")
+    table = gtk.Table( 1, 1, False)
+    e = gtk.Button(label="Open Terminal")
     b = gtk.Button("Run Script")
     c = gtk.Button("Save Script")
-    d = gtk.Button("Close tab")
-    self.mainbox.pack_start(e, expand=False)
-    self.mainbox.pack_start(b, expand=False)
-    self.mainbox.pack_start(c, expand=False)
-    self.mainbox.pack_start(d, expand=False)
+    d = gtk.Button("Open Script")
+    table.attach(e, 1, 2, 1, 2)
+    table.attach(b, 2, 3, 1, 2)
+    table.attach(c, 3, 4, 1, 2)
+    table.attach(d, 4, 5, 1, 2)
+    self.mainbox.pack_start(table, expand=False)
+    table.show_all()
     b.connect( "clicked", self.check_text)
     c.connect( "clicked", self.clear)
-    d.connect( "clicked", self.rm)
     e.connect( "clicked", self.terminal)
+    d.connect( "clicked", self.open)
     e.show()
     c.show()
     b.show()
-    d.show()
-    if a == 0:
-        d = gtk.Button("Close tab")
-        self.mainbox.pack_start(b, expand=False)
-        self.mainbox.pack_start(c, expand=False)
-        self.mainbox.pack_start(d, expand=False)
-        b.connect( "clicked", self.check_text)
-        c.connect( "clicked", self.clear)
-        d.connect( "clicked", self.rm)
-        d.show()
     # show the box
     self.mainbox.show()
 
   def main( self):
     gtk.main()
+  def open( self, w):
+    dialog = gtk.FileChooserDialog("Open..",
+                               None,
+                               gtk.FILE_CHOOSER_ACTION_OPEN,
+                               (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+    dialog.set_default_response(gtk.RESPONSE_OK)
+    response = dialog.run()
+    filter = gtk.FileFilter()
 
+    filter.add_pattern("scriptable*")
+    dialog.add_filter(filter)
+    if response == gtk.RESPONSE_OK:
+    	a = dialog.get_filename()
+	b = file(a, "r")
+	c = b.read()
+	textbuffer = self.textview.get_buffer()
+    	textbuffer.set_text(c)
+    elif response == gtk.RESPONSE_CANCEL:
+    	print 'Closed, no files selected'
+    dialog.destroy()
   def destroy( self, w):
     gtk.main_quit()
   def terminal(self, w):
@@ -93,19 +107,33 @@ class MyGUI:
       sw = gtk.ScrolledWindow()
       sw.add(self.terminal)
       sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-      self.notebook.add(sw)
+      closebtn = gtk.Button("x")
+      label = gtk.Label()
+      label.set_label("Terminal  ")
+      table = gtk.Table( 1, 1, False)
+      table.attach(label, 1, 2, 1, 2)
+      table.attach(closebtn, 2, 3, 1, 2)
+      table.show_all()
+      closebtn.connect( "clicked", self.rm)
+      e = os.popen("tty").read()
+      self.count_label.set_markup("Connected: {0}".format(e))
+      self.notebook.append_page(sw, table)
       sw.show_all()
+      a = self.notebook.current_page()
+      b = a + 1
+      self.notebook.set_current_page(b) 
   def rm(self, w):
     a = self.notebook.current_page()
     self.notebook.remove_page(a)
     if a == 0:
 	md = gtk.MessageDialog(None,
     	gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING,
-    	gtk.BUTTONS_CLOSE, "Warning about to close Scriptable")
+    	gtk.BUTTONS_CLOSE, "Warning about to close Scriptable Engine")
     	md.run()
 	if gtk.BUTTONS_CLOSE:
         	gtk.MessageDialog.destroy(md)
 		quit()
+    
   def clear( self, w ):
     textbuffer = self.textview.get_buffer()
     startiter, enditer = textbuffer.get_bounds()
@@ -127,16 +155,40 @@ class MyGUI:
     t = gtk.Notebook()
   def check_text( self, w, data=None):
     t = gtk.TextView()
+    sw = gtk.ScrolledWindow()
+    sw.add(t)
     textbuffer = self.textview.get_buffer()
     tt = t.get_buffer()
-    self.notebook.append_page(t, None)
+    label = gtk.Label()
+    a = self.notebook.current_page()
+    b = a + 1
+    self.notebook.set_current_page(b)
+    if a is 0:
+	b = a + 1
+	self.notebook.set_current_page(b) 
+    self.notebook.set_current_page(b)
+    label.set_label("Output {0} ".format(a))
+    closebtn = gtk.Button("x")
+    closebtn.connect( "clicked", self.rm)
+    closebtn.show()
+    table = gtk.Table( 1, 1, False)
+    table.attach(label, 1, 2, 1, 2)
+    table.attach(closebtn, 2, 3, 1, 2)
+    table.show_all()
+    self.notebook.append_page(sw, table)
+    sw.show_all()
     t.show()
-    self.mainbox.pack_start(self.notebook)
+    #self.mainbox.pack_start(self.notebook)
     self.notebook.show()
+    self.notebook.set_current_page(b) 
     self.editable_toggled("")
     startiter, enditer = textbuffer.get_bounds()
     text = textbuffer.get_text( startiter, enditer)
     STDOUT = os.popen(text).read()
+    if STDOUT in "sh:":
+	self.count_label.set_markup("Failed")
+    if STDOUT not in "sh:":
+	self.count_label.set_markup("Success")
     import time
     printout = "\n" + "Output:\n" + STDOUT + "############Scriptable Script Completed @ {0}############".format(time.time())
     textbuffer.set_text(text)
@@ -159,5 +211,9 @@ if __name__ == "__main__":
     m.main()
   except Exception:
       print ""
+  except gtk.GtkWarning:
+      print ""
   except pango.PangoWarning:
+      print ""
+  except AttributeError:
       print ""
