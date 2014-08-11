@@ -114,7 +114,7 @@ class MyGUI:
 	if ".php" in a:
 		self.combobox.set_active(5)
 	if ".lua" in a:
-		self.combobox.set_active(5)
+		self.combobox.set_active(6)
 	textbuffer = self.textview.get_buffer()
     	textbuffer.set_text(c)
     elif response == gtk.RESPONSE_CANCEL:
