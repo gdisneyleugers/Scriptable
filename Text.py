@@ -132,7 +132,9 @@ class MyGUI:
       sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
       closebtn = gtk.Button("x")
       label = gtk.Label()
-      label.set_label("Terminal  ")
+      a = self.notebook.current_page()
+      b = a + 1
+      label.set_label("Terminal {0}".format(b))
       table = gtk.Table( 1, 1, False)
       table.attach(label, 1, 2, 1, 2)
       table.attach(closebtn, 2, 3, 1, 2)
@@ -394,7 +396,7 @@ class MyGUI:
 	printout = "\n" + "Output:\n" + STDOUT + "############Scriptable Lua Script Completed @ {0}###########".format(time.time())
     	textbuffer.set_text(text)
     	tt.set_text(printout)
-        os.system("rm {0}".format(phpscript))
+        os.system("rm {0}".format(luascript))
     if STDOUT in "sh:":
 	self.count_label.set_markup("<b>Failed @ {0}</b>".format(time.asctime()))
     if STDOUT not in "sh:":
