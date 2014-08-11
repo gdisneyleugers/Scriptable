@@ -370,7 +370,7 @@ class MyGUI:
 	printout = "\n" + "Output:\n" + STDOUT + "############Scriptable C Script Completed @ {0}############".format(time.time())
     	textbuffer.set_text(text)
     	tt.set_text(printout)
-        os.system("rm {0}".format(phpscript))
+        os.system("rm {0}".format(cscript))
     if active == "Php":
         startiter, enditer = textbuffer.get_bounds()
         phpscript = "scriptable-{0}.php".format(uuid.uuid4())
