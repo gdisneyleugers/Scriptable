@@ -201,8 +201,6 @@ class MyGUI:
     	gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
     	gtk.BUTTONS_CLOSE, "Perl Script saved @ {0}".format(b) + "Local save @ {0}".format(o))
     	md.run()
-	if gtk.BUTTONS_CLOSE:
-        	gtk.MessageDialog.destroy(md)
     if active == "Ruby":
     	o = "scriptable-{0}.rb".format(uuid.uuid4())
     	a = file(o, "w")
@@ -215,8 +213,6 @@ class MyGUI:
     	gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
     	gtk.BUTTONS_CLOSE, "Ruby Script saved @ {0}".format(b) + "Local save @ {0}".format(o))
     	md.run()
-	if gtk.BUTTONS_CLOSE:
-        	gtk.MessageDialog.destroy(md)
     if active == "C":
     	o = "scriptable-{0}.c".format(uuid.uuid4())
     	a = file(o, "w")
@@ -229,8 +225,6 @@ class MyGUI:
     	gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
     	gtk.BUTTONS_CLOSE, "C Script saved @ {0}".format(b) + "Local save @ {0}".format(o))
     	md.run()
-	if gtk.BUTTONS_CLOSE:
-        	gtk.MessageDialog.destroy(md)
     if active == "Php":
     	o = "scriptable-{0}.php".format(uuid.uuid4())
     	a = file(o, "w")
@@ -243,8 +237,6 @@ class MyGUI:
     	gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
     	gtk.BUTTONS_CLOSE, "PHP Script saved @ {0}".format(b) + "Local save @ {0}".format(o))
     	md.run()
-	if gtk.BUTTONS_CLOSE:
-        	gtk.MessageDialog.destroy(md)
     if active == "Lua":
     	o = "scriptable-{0}.lua".format(uuid.uuid4())
     	a = file(o, "w")
@@ -257,8 +249,6 @@ class MyGUI:
     	gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
     	gtk.BUTTONS_CLOSE, "Ruby Script saved @ {0}".format(b) + "Local save @ {0}".format(o))
     	md.run()
-	if gtk.BUTTONS_CLOSE:
-        	gtk.MessageDialog.destroy(md)
     t = gtk.Notebook()
   def exec_engine(self, w):
     active = self.combobox.get_active_text()
