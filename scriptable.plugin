@@ -1,0 +1,9 @@
+[Plugin]
+Loader=python
+Module=Text.py
+IAge=3
+Name=Scriptable
+Description=A Powershell like tool
+Authors=Gregory Disney-Leugers<gregory.disney@owasp.org>
+Copyright=Copyright © 2014 Gregory Disney-Leugers<gregory.disney@owasp.org>
+Website=https://github.com/gdisneyleugers/Scriptable

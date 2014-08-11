@@ -5,14 +5,15 @@ import pango
 import gtksourceview2
 import vte
 import gobject
-
+import time
+import uuid
 class MyGUI:
 
   def __init__( self, title):
     self.window = gtk.Window()
     self.title = title
     self.window.set_title( title)
-    self.window.set_size_request(600, 450)
+    self.window.set_size_request(610, 550)
     self.window.set_resize_mode(True)
     a = self.window.set_icon_from_file("icon.png")
     self.window.set_icon(a)
@@ -54,7 +55,20 @@ class MyGUI:
     # button
     a = self.notebook.current_page()
     table = gtk.Table( 1, 1, False)
-    e = gtk.Button(label="Open Terminal")
+    self.combobox = gtk.combo_box_new_text()
+    combobox = self.combobox
+    shell = combobox.insert_text(0, "Shell")
+    tree = combobox.get_model()
+    active = combobox.get_active_text()
+    combobox.connect('changed', self.exec_engine)
+    python = combobox.insert_text(1, "Python")
+    perl = combobox.insert_text(2, "Perl")
+    ruby = combobox.insert_text(3, "Ruby")
+    clang = combobox.insert_text(4, "C")
+    php = combobox.insert_text(5, "Php")
+    lua = combobox.insert_text(6, "Lua")
+    combobox.set_active(0)
+    e = gtk.Button("Terminal")
     b = gtk.Button("Run Script")
     c = gtk.Button("Save Script")
     d = gtk.Button("Open Script")
@@ -62,6 +76,7 @@ class MyGUI:
     table.attach(b, 2, 3, 1, 2)
     table.attach(c, 3, 4, 1, 2)
     table.attach(d, 4, 5, 1, 2)
+    table.attach(combobox, 5, 6, 1, 2)
     self.mainbox.pack_start(table, expand=False)
     table.show_all()
     b.connect( "clicked", self.check_text)
@@ -84,10 +99,6 @@ class MyGUI:
                                 gtk.STOCK_OPEN, gtk.RESPONSE_OK))
     dialog.set_default_response(gtk.RESPONSE_OK)
     response = dialog.run()
-    filter = gtk.FileFilter()
-
-    filter.add_pattern("scriptable*")
-    dialog.add_filter(filter)
     if response == gtk.RESPONSE_OK:
     	a = dialog.get_filename()
 	b = file(a, "r")
@@ -153,7 +164,26 @@ class MyGUI:
     if gtk.BUTTONS_CLOSE:
         gtk.MessageDialog.destroy(md)
     t = gtk.Notebook()
+  def exec_engine(self, w):
+    active = self.combobox.get_active_text()
+    textbuffer = self.textview.get_buffer()
+    if active == "Shell":
+	textbuffer.set_text("#########################Scriptable##########################\n#!/bin/bash")
+    if active == "Python":
+   	textbuffer.set_text("#########################Scriptable##########################\n#!/bin/env python")
+    if active == "Perl":
+   	textbuffer.set_text("#########################Scriptable##########################\n#!/bin/perl")
+    if active == "Ruby":
+   	textbuffer.set_text("#########################Scriptable##########################\n#!/bin/ruby")
+    if active == "C":
+   	textbuffer.set_text("/*#########################Scriptable##########################*/\nint main(void) { \n \n \n \n }")
+    if active == "Php":
+   	textbuffer.set_text("/*#########################Scriptable##########################*/\n<?php \n \n \n \n ?> ")
+    if active == "Lua":
+   	textbuffer.set_text("--[[#########################Scriptable##########################]]--\n")
   def check_text( self, w, data=None):
+    active = self.combobox.get_active_text()
+    print active
     t = gtk.TextView()
     sw = gtk.ScrolledWindow()
     sw.add(t)
@@ -181,21 +211,101 @@ class MyGUI:
     #self.mainbox.pack_start(self.notebook)
     self.notebook.show()
     self.notebook.set_current_page(b) 
+    active = self.combobox.get_active_text()
     self.editable_toggled("")
-    startiter, enditer = textbuffer.get_bounds()
-    text = textbuffer.get_text( startiter, enditer)
-    STDOUT = os.popen(text).read()
+    if active == "Shell":
+    	startiter, enditer = textbuffer.get_bounds()
+    	text = textbuffer.get_text( startiter, enditer)
+    	STDOUT = os.popen(text).read()
+        import time
+        printout = "\n" + "Output:\n" + STDOUT + "############Scriptable Shell Script Completed @ {0}############".format(time.time())
+    	textbuffer.set_text(text)
+    	tt.set_text(printout)
+    if active == "Python":
+        startiter, enditer = textbuffer.get_bounds()
+        pyscript = "scriptable-{0}.py".format(uuid.uuid4())
+    	text = textbuffer.get_text( startiter, enditer)
+        fh = file(pyscript, "w")
+	fh.write(text)
+        fh.close()
+        STDOUT = os.popen("python {0}".format(pyscript)).read()
+        import time
+	printout = "\n" + "Output:\n" + STDOUT + "############Scriptable Python Shell Script Completed @ {0}############".format(time.time())
+    	textbuffer.set_text(text)
+    	tt.set_text(printout)
+        os.system("rm {0}".format(pyscript))
+    if active == "Perl":
+        startiter, enditer = textbuffer.get_bounds()
+        plscript = "scriptable-{0}.pl".format(uuid.uuid4())
+    	text = textbuffer.get_text( startiter, enditer)
+        fh = file(plscript, "w")
+	fh.write(text)
+        fh.close()
+        STDOUT = os.popen("perl {0}".format(plscript)).read()
+        import time
+	printout = "\n" + "Output:\n" + STDOUT + "############Scriptable Perl Script Completed @ {0}############".format(time.time())
+    	textbuffer.set_text(text)
+    	tt.set_text(printout)
+        os.system("rm {0}".format(plscript))
+    if active == "Ruby":
+        startiter, enditer = textbuffer.get_bounds()
+        rbscript = "scriptable-{0}.rb".format(uuid.uuid4())
+    	text = textbuffer.get_text( startiter, enditer)
+        fh = file(rbscript, "w")
+	fh.write(text)
+        fh.close()
+        STDOUT = os.popen("ruby {0}".format(rbscript)).read()
+        import time
+	printout = "\n" + "Output:\n" + STDOUT + "############Scriptable Ruby Script Completed @ {0}############".format(time.time())
+    	textbuffer.set_text(text)
+    	tt.set_text(printout)
+        os.system("rm {0}".format(rbscript))
+    if active == "C":
+        startiter, enditer = textbuffer.get_bounds()
+        cscript = "scriptable-{0}.c".format(uuid.uuid4())
+    	text = textbuffer.get_text( startiter, enditer)
+        fh = file(cscript, "w")
+	fh.write(text)
+        fh.close()
+        compile = os.popen("gcc {0} -o {0}".format(cscript)).read()
+        STDOUT = os.popen("./{0}".format(cscript)).read() 
+        import time
+	printout = "\n" + "Output:\n" + STDOUT + "############Scriptable C Script Completed @ {0}############".format(time.time())
+    	textbuffer.set_text(text)
+    	tt.set_text(printout)
+        os.system("rm {0}".format(phpscript))
+    if active == "Php":
+        startiter, enditer = textbuffer.get_bounds()
+        phpscript = "scriptable-{0}.php".format(uuid.uuid4())
+    	text = textbuffer.get_text( startiter, enditer)
+        fh = file(phpscript, "w")
+	fh.write(text)
+        fh.close()
+        STDOUT = os.popen("php {0}".format(phpscript)).read() 
+        import time
+	printout = "\n" + "Output:\n" + STDOUT + "############Scriptable PHP Script Completed @ {0}###########".format(time.time())
+    	textbuffer.set_text(text)
+    	tt.set_text(printout)
+        os.system("rm {0}".format(phpscript))
+    if active == "Lua":
+        startiter, enditer = textbuffer.get_bounds()
+        luascript = "scriptable-{0}.lua".format(uuid.uuid4())
+    	text = textbuffer.get_text( startiter, enditer)
+        fh = file(luascript, "w")
+	fh.write(text)
+        fh.close()
+        STDOUT = os.popen("lua {0}".format(luascript)).read() 
+        import time
+	printout = "\n" + "Output:\n" + STDOUT + "############Scriptable LUA Script Completed @ {0}###########".format(time.time())
+    	textbuffer.set_text(text)
+    	tt.set_text(printout)
+        os.system("rm {0}".format(phpscript))
     if STDOUT in "sh:":
 	self.count_label.set_markup("Failed")
     if STDOUT not in "sh:":
 	self.count_label.set_markup("Success")
-    import time
-    printout = "\n" + "Output:\n" + STDOUT + "############Scriptable Script Completed @ {0}############".format(time.time())
-    textbuffer.set_text(text)
-    tt.set_text(printout)
   def editable_toggled( self, w, data=None):
    a = self.notebook.current_page()
-
   def count_label(self):
       print self
   def text_changed( self, w, data=None):
@@ -203,7 +313,6 @@ class MyGUI:
     lines = w.get_line_count() #@+
     self.count_label.set_markup( "Chars: <b>%d</b>, Lines: <b>%d</b>" % (chars, lines))
     a = self.notebook.current_page()
-
 
 if __name__ == "__main__":
   try:
