@@ -3,7 +3,6 @@ import gtk
 import os
 import pango
 import gtksourceview2
-import vte
 import gobject
 import time
 import uuid
@@ -128,30 +127,7 @@ class MyGUI:
     gtk.main_quit()
 
   def terminal(self, w):
-      import vte
-      self.terminal = vte.Terminal()
-      self.terminal.connect ("child-exited", lambda term: gtk.main_quit())
-      self.terminal.fork_command()      
-      sw = gtk.ScrolledWindow()
-      sw.add(self.terminal)
-      sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-      closebtn = gtk.Button("x")
-      label = gtk.Label()
-      a = self.notebook.current_page()
-      b = a + 1
-      label.set_label("Terminal {0}".format(b))
-      table = gtk.Table( 1, 1, False)
-      table.attach(label, 1, 2, 1, 2)
-      table.attach(closebtn, 2, 3, 1, 2)
-      table.show_all()
-      closebtn.connect( "clicked", self.rm)
-      e = os.popen("tty").read()
-      self.count_label.set_markup("Connected: {0}".format(e))
-      self.notebook.append_page(sw, table)
-      sw.show_all()
-      a = self.notebook.current_page()
-      b = a + 1
-      self.notebook.set_current_page(b) 
+      os.system("xterm")
 
   def rm(self, w):
     a = self.notebook.current_page()
@@ -183,6 +159,8 @@ class MyGUI:
     	gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
     	gtk.BUTTONS_CLOSE, "Shell Script saved @ {0}".format(b) + "Local save @ {0}".format(o))
     	md.run()
+	if gtk.BUTTONS_CLOSE:
+        	gtk.MessageDialog.destroy(md)
     if active == "Python":
     	o = "scriptable-{0}.py".format(uuid.uuid4())
     	a = file(o, "w")
