@@ -183,6 +183,8 @@ class MyGUI:
     	gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_INFO,
     	gtk.BUTTONS_CLOSE, "Shell Script saved @ {0}".format(b) + "Local save @ {0}".format(o))
     	md.run()
+    	if gtk.BUTTONS_CLOSE:
+        	gtk.MessageDialog.destroy(md)
     if active == "Python":
     	o = "scriptable-{0}.py".format(uuid.uuid4())
     	a = file(o, "w")
