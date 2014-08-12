@@ -9,7 +9,7 @@ Double click the scriptable .desktop file
 To run on Mac OS X:
 ==========
 python TextOSX.py
-the terminal function will require xQuartz
+requires xQuartz
 
 Requires:
 ==========
