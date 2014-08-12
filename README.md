@@ -8,7 +8,8 @@ To run on Linux:
 Double click the scriptable .desktop file
 To run on Mac OS X:
 ==========
-python Text.py
+python TextOSX.py
+the terminal function will require xQuartz
 
 Requires:
 ==========
