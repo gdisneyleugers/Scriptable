@@ -13,7 +13,7 @@ class MyGUI:
         self.window = gtk.Window()
         self.title = title
         self.window.set_title(title)
-        self.window.set_size_request(610, 550)
+        self.window.set_size_request(410, 450)
         self.window.set_resize_mode(True)
         a = self.window.set_icon_from_file("icon.png")
         self.window.set_icon(a)
@@ -430,12 +430,11 @@ if __name__ == "__main__":
         m = MyGUI("Scriptable")
         osx_app = gtk_osxapplication.OSXApplication()
         osx_app.set_use_quartz_accelerators(True)
+        osx_app.sync_menubar()
+        osx_app.set_dock_icon_pixbuf(gtk.gdk.pixbuf_new_from_file("icon.png"))
+        osx_app.chain(m.main())
         m.main()
     except KeyboardInterrupt:
-        print ""
-    except gtk.GtkWarning:
-        print ""
-    except pango.PangoWarning:
         print ""
     except AttributeError:
         print ""
